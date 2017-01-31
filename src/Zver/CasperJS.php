@@ -6,17 +6,20 @@ namespace Zver {
 
         public static function isCasperJSInstalled()
         {
-            $installed = false;
-            try {
-                $version = StringHelper::load(@shell_exec('c222asperjs --version'))
-                                       ->trimSpaces()
-                                       ->toLowerCase();
+            $version = StringHelper::load(@shell_exec('casperjs --version'))
+                                   ->trimSpaces()
+                                   ->toLowerCase();
 
-                return $version->isMatch('^\d+\.\d+\.\d+$');
-            }
-            catch (\Exception $e) {
-                $installed = false;
-            }
+            return $version->isMatch('^\d+\.\d+\.\d+$');
+        }
+
+        public static function isPhantomJSInstalled()
+        {
+            $version = StringHelper::load(@shell_exec('phantomjs -v'))
+                                   ->trimSpaces()
+                                   ->toLowerCase();
+
+            return $version->isMatch('^\d+\.\d+\.\d+$');
         }
 
     }
