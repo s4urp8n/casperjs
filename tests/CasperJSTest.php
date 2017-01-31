@@ -1,5 +1,7 @@
 <?php
 
+use Zver\CasperJS;
+
 class CasperJSTest extends PHPUnit\Framework\TestCase
 {
 
@@ -17,7 +19,7 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     public function testIsCasperJSInstalled()
     {
-        $installed = \Zver\CasperJS::isCasperJSInstalled();
+        $installed = CasperJS::isCasperJSInstalled();
 
         if (!$installed) {
             $this->fail("CasperJS is not installed. Test aborting.\n");
@@ -26,11 +28,19 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     public function testIsPhantomJSInstalled()
     {
-        $installed = \Zver\CasperJS::isPhantomJSInstalled();
+        $installed = CasperJS::isPhantomJSInstalled();
 
         if (!$installed) {
             $this->fail("PhantomJS is not installed. Test aborting.\n");
         }
     }
 
+    public function testFindFile()
+    {
+        $this->foreachFalse([
+                                CasperJS::findScript(''),
+                                CasperJS::findScript('notexisted'),
+                                CasperJS::findScript('notexisted.js'),
+                            ]);
+    }
 }
