@@ -19,7 +19,8 @@
     }
   },
   "require": {
-    "zver/string-helper": "^2.0"
+    "zver/string-helper": "^2.0",
+    "zver/directory-walker": "^1.0"
   },
   "require-dev": {
   }

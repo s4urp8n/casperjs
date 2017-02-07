@@ -7,43 +7,37 @@ $composerDirectory =
 
 //PSR4 autoloader
 spl_autoload_register(
-    function ($className) use ($srcDirectory, $classesDirectory)
-    {
-        
+    function ($className) use ($srcDirectory, $classesDirectory) {
+
         $className = mb_eregi_replace('[\\\/]+', DIRECTORY_SEPARATOR, $className);
         $className = mb_eregi_replace('^' . preg_quote(DIRECTORY_SEPARATOR) . '+', '', $className);
         $className = mb_eregi_replace(preg_quote(DIRECTORY_SEPARATOR) . '+$', '', $className);
         $className .= '.php';
-        
-        if (file_exists($srcDirectory . $className))
-        {
+
+        if (file_exists($srcDirectory . $className)) {
             include_once($srcDirectory . $className);
         }
-        
-        if (file_exists($classesDirectory . $className))
-        {
+
+        if (file_exists($classesDirectory . $className)) {
             include_once($classesDirectory . $className);
         }
-        
+
     }, false, false
 );
 
 //Functions file
 $functionsFile = $srcDirectory . 'Functions.php';
-if (file_exists($functionsFile))
-{
+if (file_exists($functionsFile)) {
     include_once($functionsFile);
 }
 
 //Composer autoload
 $composerFile = $composerDirectory . 'autoload.php';
-if (file_exists($composerFile))
-{
+if (file_exists($composerFile)) {
     include_once($composerFile);
 }
 
-if (!function_exists('packageFile'))
-{
+if (!function_exists('packageFile')) {
     /**
      * @param $name Name of file in files folder
      *
@@ -51,14 +45,11 @@ if (!function_exists('packageFile'))
      */
     function packageFile($name)
     {
-        return realpath(
-            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $name
-        );
+        return realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $name);
     }
 }
 
-if (!function_exists('packageTestFile'))
-{
+if (!function_exists('packageTestFile')) {
     /**
      * @param $name Name of file in files folder
      *
@@ -66,8 +57,6 @@ if (!function_exists('packageTestFile'))
      */
     function packageTestFile($name)
     {
-        return realpath(
-            __DIR__ . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $name
-        );
+        return realpath(__DIR__ . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $name);
     }
 }

@@ -22,21 +22,38 @@ namespace Zver {
                                ->isMatch('^\d+\.\d+\.\d+$');
         }
 
+        public static function unregisterDirectories()
+        {
+            static::$scriptDirectories = [];
+        }
+
+        public static function getRegisteredDirectories()
+        {
+            return static::$scriptDirectories;
+        }
+
         public static function registerScriptDirectory($directory)
         {
-            static::$scriptDirectories[] = $directory;
+            $realpath = @realpath($directory);
+
+            if (file_exists($realpath) && is_dir($realpath)) {
+                if (!in_array($directory, static::$scriptDirectories)) {
+                    static::$scriptDirectories[] = $directory;
+                }
+            } else {
+                throw new \Exception('Directory "' . $directory . '" is not exists');
+            }
         }
 
         public static function findScript($scriptName)
         {
-
             $scriptFile = StringHelper::load(Common::replaceSlashesToPlatformSlashes($scriptName))
                                       ->ensureEndingIs('.js');
 
             /**
              * Full path to script
              */
-            if (file_exists($scriptFile)) {
+            if (file_exists($scriptFile->get())) {
                 return $scriptFile->get();
             }
 
