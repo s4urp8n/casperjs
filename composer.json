@@ -1,6 +1,6 @@
 {
-  "name": "zver/package-template",
-  "description": "this is universal package template for development and testing",
+  "name": "zver/casperjs",
+  "description": "CasperJS components",
   "minimum-stability": "stable",
   "config": {
     "optimize-autoloader": true
