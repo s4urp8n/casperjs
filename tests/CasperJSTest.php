@@ -109,19 +109,6 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
     public function testFindFileScriptName()
     {
 
-        /**
-         * Full path
-         */
-        $this->foreachSame([
-                               [CasperJS::findScript(packageTestFile('testFind.js')), packageTestFile('testFind.js')],
-                               [
-                                   CasperJS::findScript(\Zver\StringHelper::load(packageTestFile('testFind.js'))
-                                                                          ->removeEnding('.js')
-                                                                          ->get()),
-                                   packageTestFile('testFind.js'),
-                               ],
-                           ]);
-
         CasperJS::unregisterDirectories();
 
         $findDirectories = [
@@ -135,11 +122,11 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
         $findFiles = ['testFind1', 'testFind2'];
 
-        /**
-         * Separate find test
-         */
         foreach ($findDirectories as $findDirectory) {
 
+            /**
+             * Separate find test
+             */
             CasperJS::unregisterDirectories();
             CasperJS::registerScriptDirectory($findDirectory);
 
@@ -151,6 +138,10 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                        ],
                                        [
                                            CasperJS::findScript($findFile . '.js'),
+                                           $findDirectory . $findFile . '.js',
+                                       ],
+                                       [
+                                           CasperJS::findScript($findDirectory . $findFile . '.js'),
                                            $findDirectory . $findFile . '.js',
                                        ],
                                    ]);

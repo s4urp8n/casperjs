@@ -76,7 +76,6 @@ namespace Zver {
             }
 
             return false;
-
         }
 
     }
