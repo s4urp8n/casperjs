@@ -6,7 +6,7 @@ use Zver\DirectoryWalker;
 class CasperJSTest extends PHPUnit\Framework\TestCase
 {
 
-    use Package\Test;
+    use \Zver\Package\Test;
 
     public static function setUpBeforeClass()
     {
@@ -95,15 +95,15 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     public function testRegisterException()
     {
-        $this->assertException(function () {
-            CasperJS::registerScriptDirectory(DirectoryWalker::fromCurrent()
-                                                             ->enter(md5(rand(1, 9999)))
-                                                             ->enter(md5(rand(1, 9999)))
-                                                             ->enter(md5(rand(1, 9999)))
-                                                             ->enter(md5(rand(1, 9999)))
-                                                             ->enter(md5(rand(1, 9999)))
-                                                             ->get());
-        });
+        $this->expectException('\Exception');
+
+        CasperJS::registerScriptDirectory(DirectoryWalker::fromCurrent()
+                                                         ->enter(md5(rand(1, 9999)))
+                                                         ->enter(md5(rand(1, 9999)))
+                                                         ->enter(md5(rand(1, 9999)))
+                                                         ->enter(md5(rand(1, 9999)))
+                                                         ->enter(md5(rand(1, 9999)))
+                                                         ->get());
     }
 
     public function testFindFileScriptName()
