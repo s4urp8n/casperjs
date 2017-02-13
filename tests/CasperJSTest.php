@@ -263,7 +263,7 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     public function testNew()
     {
-        $this->setExpectedException('Error');
+        $this->expectException('Error');
         $casper = new CasperJS;
     }
 }
