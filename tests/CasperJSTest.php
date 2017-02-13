@@ -200,7 +200,7 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                             ]);
     }
 
-    public function testOptions()
+    public function testOptionsAndRequires()
     {
 
         $casper = CasperJS::init();
@@ -214,12 +214,21 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                    $casper->getConsoleOptions(),
                                    [],
                                ],
+                               [
+                                   $casper->getRequires(),
+                                   [],
+                               ],
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
+                               ],
                            ]);
 
         $options = [];
 
         for ($i = 1; $i < 10; $i++) {
             $casper->setOption('option' . $i, 'value' . $i);
+            $casper->setRequire('value' . $i);
             $casper->setConsoleOption('option' . $i, 'value' . $i);
             $options['option' . $i] = 'value' . $i;
         }
@@ -230,8 +239,16 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                    $casper->getOptions(),
                                ],
                                [
+                                   array_values($options),
+                                   $casper->getRequires(),
+                               ],
+                               [
                                    $options,
                                    $casper->getConsoleOptions(),
+                               ],
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
                                ],
                            ]);
 
@@ -245,6 +262,14 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                    $casper->getConsoleOptions(),
                                    [],
                                ],
+                               [
+                                   array_values($options),
+                                   $casper->getRequires(),
+                               ],
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
+                               ],
                            ]);
 
         $casper->clearOptions();
@@ -257,6 +282,34 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                    $casper->getConsoleOptions(),
                                    [],
                                ],
+                               [
+                                   array_values($options),
+                                   $casper->getRequires(),
+                               ],
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
+                               ],
+                           ]);
+
+        $casper->clearRequires();
+        $this->foreachSame([
+                               [
+                                   $casper->getOptions(),
+                                   [],
+                               ],
+                               [
+                                   $casper->getConsoleOptions(),
+                                   [],
+                               ],
+                               [
+                                   $casper->getRequires(),
+                                   [],
+                               ],
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
+                               ],
                            ]);
 
     }
@@ -265,5 +318,66 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
     {
         $this->expectException('Error');
         $casper = new CasperJS;
+    }
+
+    public function testIgnoreSSL()
+    {
+        CasperJS::init()
+                ->ignoreSSLErrors()
+                ->enableImages()
+                ->enablePlugins();
+    }
+
+    public function testClientScripts()
+    {
+        $casper = CasperJS::init();
+        $this->foreachSame([
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
+                               ],
+                           ]);
+
+        $casper->setClientScript(__DIR__ . '/files/testFind1.js');
+
+        $this->foreachSame([
+                               [$casper->getClientScripts(), [CasperJS::findScript(__DIR__ . '/files/testFind1.js')]],
+                           ]);
+
+        $casper->setClientScript(__DIR__ . '/files/testFind1.js');
+        $this->foreachSame([
+                               [
+                                   $casper->getClientScripts(),
+                                   [
+                                       CasperJS::findScript(__DIR__ . '/files/testFind1.js'),
+                                   ],
+                               ],
+                           ]);
+
+        $casper->setClientScript(__DIR__ . '/files/testFind1.js')
+               ->setClientScript(__DIR__ . '/files/testFind4.js')
+               ->setClientScript(__DIR__ . '/files/testFind4.js')
+               ->setClientScript(__DIR__ . '/files/testFind2.js')
+               ->setClientScript(__DIR__ . '/files/testFind2.js');
+
+        $this->foreachSame([
+                               [
+                                   $casper->getClientScripts(),
+                                   [
+                                       CasperJS::findScript(__DIR__ . '/files/testFind1.js'),
+                                       CasperJS::findScript(__DIR__ . '/files/testFind4.js'),
+                                       CasperJS::findScript(__DIR__ . '/files/testFind2.js'),
+                                   ],
+                               ],
+                           ]);
+
+        $casper->clearClientScripts();
+        $this->foreachSame([
+                               [
+                                   [],
+                                   $casper->getClientScripts(),
+                               ],
+                           ]);
+
     }
 }

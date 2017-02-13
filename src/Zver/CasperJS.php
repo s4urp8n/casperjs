@@ -6,7 +6,27 @@ namespace Zver {
 
         protected static $scriptDirectories = [];
         protected $options = [];
+        protected $clientScripts = [];
+        protected $requires = [];
         protected $consoleOptions = [];
+        protected $viewportWidth = 1920;
+        protected $viewportHeight = 1280;
+        protected $loadImages = false;
+        protected $loadPlugins = false;
+
+        public function enableImages()
+        {
+            $this->loadImages = true;
+
+            return $this;
+        }
+
+        public function enablePlugins()
+        {
+            $this->loadPlugins = true;
+
+            return $this;
+        }
 
         protected function __construct()
         {
@@ -18,11 +38,47 @@ namespace Zver {
             return new static;
         }
 
+        public function setClientScript($script)
+        {
+
+            $found = static::findScript($script);
+
+            if ($found !== false && !in_array($found, $this->clientScripts)) {
+                $this->clientScripts[] = $found;
+            }
+
+            return $this;
+        }
+
+        public function getClientScripts()
+        {
+            return $this->clientScripts;
+        }
+
+        public function clearClientScripts()
+        {
+            $this->clientScripts = [];
+
+            return $this;
+        }
+
         public function setOption($option, $value)
         {
             $this->options[$option] = $value;
 
             return $this;
+        }
+
+        public function setRequire($package)
+        {
+            $this->requires[] = $package;
+
+            return $this;
+        }
+
+        public function getRequires()
+        {
+            return $this->requires;
         }
 
         public function getOptions()
@@ -45,6 +101,13 @@ namespace Zver {
         public function clearConsoleOptions()
         {
             $this->consoleOptions = [];
+
+            return $this;
+        }
+
+        public function clearRequires()
+        {
+            $this->requires = [];
 
             return $this;
         }
@@ -128,9 +191,11 @@ namespace Zver {
             return false;
         }
 
-        //    $command = static::getCasperBin() . ' --ignore-ssl-errors=true --ssl-protocol=any ' . escapeshellarg(
-        //    static::getScriptsDirectory() . $script_name
-        //    ) . ' ' . $options;
+        public function ignoreSSLErrors()
+        {
+            return $this->setConsoleOption('ignore-ssl-errors', 'true')
+                        ->setConsoleOption('ssl-protocol', 'any');
+        }
 
     }
 }
