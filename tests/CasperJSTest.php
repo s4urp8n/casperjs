@@ -122,11 +122,11 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
         $findFiles = ['testFind1', 'testFind2'];
 
+        /**
+         * Separate find test
+         */
         foreach ($findDirectories as $findDirectory) {
 
-            /**
-             * Separate find test
-             */
             CasperJS::unregisterDirectories();
             CasperJS::registerScriptDirectory($findDirectory);
 
@@ -149,6 +149,41 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
         }
 
+        /**
+         * Together find test
+         */
+        CasperJS::unregisterDirectories();
+        foreach ($findDirectories as $findDirectory) {
+            CasperJS::registerScriptDirectory($findDirectory);
+        }
+
+        foreach ($findFiles as $findFile) {
+
+            $this->foreachSame([
+                                   [
+                                       CasperJS::findScript($findFile),
+                                       $findDirectories[0] . $findFile . '.js',
+                                   ],
+                                   [
+                                       CasperJS::findScript($findFile . '.js'),
+                                       $findDirectories[0] . $findFile . '.js',
+                                   ],
+                               ]);
+        }
+
+        /**
+         * Unique files test
+         */
+        $this->foreachSame([
+                               [
+                                   CasperJS::findScript('testFind5'),
+                                   $findDirectories[1] . 'testFind5.js',
+                               ],
+                               [
+                                   CasperJS::findScript('testFind4'),
+                                   $findDirectories[0] . 'testFind4.js',
+                               ],
+                           ]);
     }
 
     public function testFindUnexistedFile()
@@ -163,5 +198,72 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                 CasperJS::findScript('notexisted'),
                                 CasperJS::findScript('notexisted.js'),
                             ]);
+    }
+
+    public function testOptions()
+    {
+
+        $casper = CasperJS::init();
+
+        $this->foreachSame([
+                               [
+                                   $casper->getOptions(),
+                                   [],
+                               ],
+                               [
+                                   $casper->getConsoleOptions(),
+                                   [],
+                               ],
+                           ]);
+
+        $options = [];
+
+        for ($i = 1; $i < 10; $i++) {
+            $casper->setOption('option' . $i, 'value' . $i);
+            $casper->setConsoleOption('option' . $i, 'value' . $i);
+            $options['option' . $i] = 'value' . $i;
+        }
+
+        $this->foreachSame([
+                               [
+                                   $options,
+                                   $casper->getOptions(),
+                               ],
+                               [
+                                   $options,
+                                   $casper->getConsoleOptions(),
+                               ],
+                           ]);
+
+        $casper->clearConsoleOptions();
+        $this->foreachSame([
+                               [
+                                   $casper->getOptions(),
+                                   $options,
+                               ],
+                               [
+                                   $casper->getConsoleOptions(),
+                                   [],
+                               ],
+                           ]);
+
+        $casper->clearOptions();
+        $this->foreachSame([
+                               [
+                                   $casper->getOptions(),
+                                   [],
+                               ],
+                               [
+                                   $casper->getConsoleOptions(),
+                                   [],
+                               ],
+                           ]);
+
+    }
+
+    public function testNew()
+    {
+        $this->setExpectedException('Error');
+        $casper = new CasperJS;
     }
 }

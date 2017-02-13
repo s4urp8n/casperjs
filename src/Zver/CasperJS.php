@@ -5,6 +5,56 @@ namespace Zver {
     {
 
         protected static $scriptDirectories = [];
+        protected $options = [];
+        protected $consoleOptions = [];
+
+        protected function __construct()
+        {
+
+        }
+
+        public static function init()
+        {
+            return new static;
+        }
+
+        public function setOption($option, $value)
+        {
+            $this->options[$option] = $value;
+
+            return $this;
+        }
+
+        public function getOptions()
+        {
+            return $this->options;
+        }
+
+        public function setConsoleOption($option, $value)
+        {
+            $this->consoleOptions[$option] = $value;
+
+            return $this;
+        }
+
+        public function getConsoleOptions()
+        {
+            return $this->consoleOptions;
+        }
+
+        public function clearConsoleOptions()
+        {
+            $this->consoleOptions = [];
+
+            return $this;
+        }
+
+        public function clearOptions()
+        {
+            $this->options = [];
+
+            return $this;
+        }
 
         public static function isCasperJSInstalled()
         {
@@ -34,7 +84,7 @@ namespace Zver {
 
         public static function registerScriptDirectory($directory)
         {
-            $realpath = @realpath($directory);
+            $realpath = realpath($directory);
 
             if (file_exists($realpath) && is_dir($realpath)) {
                 if (!in_array($directory, static::$scriptDirectories)) {
@@ -61,7 +111,7 @@ namespace Zver {
 
             $testFile = '';
 
-            foreach (static::$scriptDirectories as $directory) {
+            foreach (static::getRegisteredDirectories() as $directory) {
 
                 $dir = StringHelper::load(Common::replaceSlashesToPlatformSlashes($directory))
                                    ->ensureEndingIs(DIRECTORY_SEPARATOR);
@@ -77,6 +127,10 @@ namespace Zver {
 
             return false;
         }
+
+        //    $command = static::getCasperBin() . ' --ignore-ssl-errors=true --ssl-protocol=any ' . escapeshellarg(
+        //    static::getScriptsDirectory() . $script_name
+        //    ) . ' ' . $options;
 
     }
 }
