@@ -27,6 +27,24 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
         }
     }
 
+    public function testCommandGeneration()
+    {
+        $testData = [
+
+            [
+                'path'      => 'script.path',
+                'arguments' => ['arg1', 'arg2', 'arg3'],
+                'options'   => ['opt1', 'opt2', 'opt3'],
+                'command'   => 'casperjs opt1 opt2 opt3 "script.path" arg1 arg2 arg3',
+            ],
+
+        ];
+
+        foreach ($testData as $test) {
+            $this->assertSame($test['command'], CasperJS::getCasperJsCommand($test['path'], $test['arguments'], $test['options']));
+        }
+    }
+
     public function testIsPhantomJSInstalled()
     {
         $installed = CasperJS::isPhantomJSInstalled();
@@ -36,348 +54,57 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
         }
     }
 
-    public function testRegisterUnregisterDirs()
+    public function testExecuteScript()
     {
-        /**
-         * Empty by default
-         */
-        $this->foreachSame([
-                               [CasperJS::getRegisteredDirectories(), []],
-                           ]);
-
-        /**
-         * Test add current folder
-         */
-        CasperJS::registerScriptDirectory(__DIR__);
-
-        $this->foreachSame([
-                               [CasperJS::getRegisteredDirectories(), [__DIR__]],
-                           ]);
-
-        /**
-         * Test same directory isn't added
-         */
-        CasperJS::registerScriptDirectory(__DIR__);
-
-        $this->foreachSame([
-                               [CasperJS::getRegisteredDirectories(), [__DIR__]],
-                           ]);
-
-        /**
-         * Add other directory
-         */
-        $otherDir = DirectoryWalker::fromCurrent()
-                                   ->up()
-                                   ->up()
-                                   ->get();
-
-        CasperJS::registerScriptDirectory($otherDir);
-
-        $this->foreachSame([
-                               [
-                                   CasperJS::getRegisteredDirectories(),
-                                   [
-                                       __DIR__,
-                                       $otherDir,
-                                   ],
-                               ],
-                           ]);
-
-        /**
-         * Test unregister
-         */
-        CasperJS::unregisterDirectories();
-
-        $this->foreachSame([
-                               [CasperJS::getRegisteredDirectories(), []],
-                           ]);
+        $this->assertSame(trim(CasperJS::executeScript(\Zver\Common::getPackageTestFilePath('testExecute.js'))), 'Hello world');
     }
 
-    public function testRegisterException()
+    public function testExecuteArguments()
     {
-        $this->expectException('\Exception');
+        $arguments = ['1', '2', '3', '4324', 'http://site.com/'];
 
-        CasperJS::registerScriptDirectory(DirectoryWalker::fromCurrent()
-                                                         ->enter(md5(rand(1, 9999)))
-                                                         ->enter(md5(rand(1, 9999)))
-                                                         ->enter(md5(rand(1, 9999)))
-                                                         ->enter(md5(rand(1, 9999)))
-                                                         ->enter(md5(rand(1, 9999)))
-                                                         ->get());
+        $this->assertSame(CasperJS::executeScript(\Zver\Common::getPackageTestFilePath('testArguments.js'), $arguments), implode("\n", $arguments) . "\n");
+
     }
 
-    public function testFindFileScriptName()
+    public function testGetUrlContent()
     {
 
-        CasperJS::unregisterDirectories();
+        $testData = [
 
-        $findDirectories = [
-            DirectoryWalker::fromCurrent()
-                           ->enter('files')
-                           ->get(),
-            DirectoryWalker::fromCurrent()
-                           ->enter('classes/Package')
-                           ->get(),
+            [
+                'url'        => 'http://php.net/',
+                'substrings' => [
+                    'class="nav"',
+                    '<html',
+                    '</html',
+                    '<body',
+                    '</body',
+                    '<a href="/downloads">Downloads</a>',
+                    '<a href="/mirrors.php">Mirror sites</a>',
+                    'php',
+                ],
+            ],
+            [
+                'url'        => 'https://github.com/',
+                'substrings' => [
+                    'github',
+                    'href',
+                    '<svg aria-hidden="true"',
+                ],
+            ],
+
         ];
 
-        $findFiles = ['testFind1', 'testFind2'];
+        foreach ($testData as $test) {
+            $content = CasperJS::getUrlContent($test['url']);
 
-        /**
-         * Separate find test
-         */
-        foreach ($findDirectories as $findDirectory) {
-
-            CasperJS::unregisterDirectories();
-            CasperJS::registerScriptDirectory($findDirectory);
-
-            foreach ($findFiles as $findFile) {
-                $this->foreachSame([
-                                       [
-                                           CasperJS::findScript($findFile),
-                                           $findDirectory . $findFile . '.js',
-                                       ],
-                                       [
-                                           CasperJS::findScript($findFile . '.js'),
-                                           $findDirectory . $findFile . '.js',
-                                       ],
-                                       [
-                                           CasperJS::findScript($findDirectory . $findFile . '.js'),
-                                           $findDirectory . $findFile . '.js',
-                                       ],
-                                   ]);
+            foreach ($test['substrings'] as $substring) {
+                $this->assertContains($substring, $content);
             }
 
         }
 
-        /**
-         * Together find test
-         */
-        CasperJS::unregisterDirectories();
-        foreach ($findDirectories as $findDirectory) {
-            CasperJS::registerScriptDirectory($findDirectory);
-        }
-
-        foreach ($findFiles as $findFile) {
-
-            $this->foreachSame([
-                                   [
-                                       CasperJS::findScript($findFile),
-                                       $findDirectories[0] . $findFile . '.js',
-                                   ],
-                                   [
-                                       CasperJS::findScript($findFile . '.js'),
-                                       $findDirectories[0] . $findFile . '.js',
-                                   ],
-                               ]);
-        }
-
-        /**
-         * Unique files test
-         */
-        $this->foreachSame([
-                               [
-                                   CasperJS::findScript('testFind5'),
-                                   $findDirectories[1] . 'testFind5.js',
-                               ],
-                               [
-                                   CasperJS::findScript('testFind4'),
-                                   $findDirectories[0] . 'testFind4.js',
-                               ],
-                           ]);
     }
 
-    public function testFindUnexistedFile()
-    {
-        CasperJS::unregisterDirectories();
-
-        /**
-         * No register dirs, not esisted paths
-         */
-        $this->foreachFalse([
-                                CasperJS::findScript(''),
-                                CasperJS::findScript('notexisted'),
-                                CasperJS::findScript('notexisted.js'),
-                            ]);
-    }
-
-    public function testOptionsAndRequires()
-    {
-
-        $casper = CasperJS::init();
-
-        $this->foreachSame([
-                               [
-                                   $casper->getOptions(),
-                                   [],
-                               ],
-                               [
-                                   $casper->getConsoleOptions(),
-                                   [],
-                               ],
-                               [
-                                   $casper->getRequires(),
-                                   [],
-                               ],
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-        $options = [];
-
-        for ($i = 1; $i < 10; $i++) {
-            $casper->setOption('option' . $i, 'value' . $i);
-            $casper->setRequire('value' . $i);
-            $casper->setConsoleOption('option' . $i, 'value' . $i);
-            $options['option' . $i] = 'value' . $i;
-        }
-
-        $this->foreachSame([
-                               [
-                                   $options,
-                                   $casper->getOptions(),
-                               ],
-                               [
-                                   array_values($options),
-                                   $casper->getRequires(),
-                               ],
-                               [
-                                   $options,
-                                   $casper->getConsoleOptions(),
-                               ],
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-        $casper->clearConsoleOptions();
-        $this->foreachSame([
-                               [
-                                   $casper->getOptions(),
-                                   $options,
-                               ],
-                               [
-                                   $casper->getConsoleOptions(),
-                                   [],
-                               ],
-                               [
-                                   array_values($options),
-                                   $casper->getRequires(),
-                               ],
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-        $casper->clearOptions();
-        $this->foreachSame([
-                               [
-                                   $casper->getOptions(),
-                                   [],
-                               ],
-                               [
-                                   $casper->getConsoleOptions(),
-                                   [],
-                               ],
-                               [
-                                   array_values($options),
-                                   $casper->getRequires(),
-                               ],
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-        $casper->clearRequires();
-        $this->foreachSame([
-                               [
-                                   $casper->getOptions(),
-                                   [],
-                               ],
-                               [
-                                   $casper->getConsoleOptions(),
-                                   [],
-                               ],
-                               [
-                                   $casper->getRequires(),
-                                   [],
-                               ],
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-    }
-
-    public function testNew()
-    {
-        $this->expectException('Error');
-        $casper = new CasperJS;
-    }
-
-    public function testIgnoreSSL()
-    {
-        CasperJS::init()
-                ->ignoreSSLErrors()
-                ->enableImages()
-                ->enablePlugins();
-    }
-
-    public function testClientScripts()
-    {
-        $casper = CasperJS::init();
-        $this->foreachSame([
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-        $casper->setClientScript(__DIR__ . '/files/testFind1.js');
-
-        $this->foreachSame([
-                               [$casper->getClientScripts(), [CasperJS::findScript(__DIR__ . '/files/testFind1.js')]],
-                           ]);
-
-        $casper->setClientScript(__DIR__ . '/files/testFind1.js');
-        $this->foreachSame([
-                               [
-                                   $casper->getClientScripts(),
-                                   [
-                                       CasperJS::findScript(__DIR__ . '/files/testFind1.js'),
-                                   ],
-                               ],
-                           ]);
-
-        $casper->setClientScript(__DIR__ . '/files/testFind1.js')
-               ->setClientScript(__DIR__ . '/files/testFind4.js')
-               ->setClientScript(__DIR__ . '/files/testFind4.js')
-               ->setClientScript(__DIR__ . '/files/testFind2.js')
-               ->setClientScript(__DIR__ . '/files/testFind2.js');
-
-        $this->foreachSame([
-                               [
-                                   $casper->getClientScripts(),
-                                   [
-                                       CasperJS::findScript(__DIR__ . '/files/testFind1.js'),
-                                       CasperJS::findScript(__DIR__ . '/files/testFind4.js'),
-                                       CasperJS::findScript(__DIR__ . '/files/testFind2.js'),
-                                   ],
-                               ],
-                           ]);
-
-        $casper->clearClientScripts();
-        $this->foreachSame([
-                               [
-                                   [],
-                                   $casper->getClientScripts(),
-                               ],
-                           ]);
-
-    }
 }

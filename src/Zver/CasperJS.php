@@ -4,121 +4,6 @@ namespace Zver {
     class CasperJS
     {
 
-        protected static $scriptDirectories = [];
-        protected $options = [];
-        protected $clientScripts = [];
-        protected $requires = [];
-        protected $consoleOptions = [];
-        protected $viewportWidth = 1920;
-        protected $viewportHeight = 1280;
-        protected $loadImages = false;
-        protected $loadPlugins = false;
-
-        public function enableImages()
-        {
-            $this->loadImages = true;
-
-            return $this;
-        }
-
-        public function enablePlugins()
-        {
-            $this->loadPlugins = true;
-
-            return $this;
-        }
-
-        protected function __construct()
-        {
-
-        }
-
-        public static function init()
-        {
-            return new static;
-        }
-
-        public function setClientScript($script)
-        {
-
-            $found = static::findScript($script);
-
-            if ($found !== false && !in_array($found, $this->clientScripts)) {
-                $this->clientScripts[] = $found;
-            }
-
-            return $this;
-        }
-
-        public function getClientScripts()
-        {
-            return $this->clientScripts;
-        }
-
-        public function clearClientScripts()
-        {
-            $this->clientScripts = [];
-
-            return $this;
-        }
-
-        public function setOption($option, $value)
-        {
-            $this->options[$option] = $value;
-
-            return $this;
-        }
-
-        public function setRequire($package)
-        {
-            $this->requires[] = $package;
-
-            return $this;
-        }
-
-        public function getRequires()
-        {
-            return $this->requires;
-        }
-
-        public function getOptions()
-        {
-            return $this->options;
-        }
-
-        public function setConsoleOption($option, $value)
-        {
-            $this->consoleOptions[$option] = $value;
-
-            return $this;
-        }
-
-        public function getConsoleOptions()
-        {
-            return $this->consoleOptions;
-        }
-
-        public function clearConsoleOptions()
-        {
-            $this->consoleOptions = [];
-
-            return $this;
-        }
-
-        public function clearRequires()
-        {
-            $this->requires = [];
-
-            return $this;
-        }
-
-        public function clearOptions()
-        {
-            $this->options = [];
-
-            return $this;
-        }
-
         public static function isCasperJSInstalled()
         {
             return StringHelper::load(@shell_exec('casperjs --version'))
@@ -135,66 +20,35 @@ namespace Zver {
                                ->isMatch('^\d+\.\d+\.\d+$');
         }
 
-        public static function unregisterDirectories()
+        public static function getCasperJsCommand($scriptPath, $arguments = [], $options = [])
         {
-            static::$scriptDirectories = [];
+            return sprintf('casperjs %s "%s" %s', implode(' ', $options), $scriptPath, implode(' ', $arguments));
         }
 
-        public static function getRegisteredDirectories()
+        public static function executeScript($scriptPath, $arguments = [], $options = [])
         {
-            return static::$scriptDirectories;
+            return Common::executeInSystem(static::getCasperJsCommand($scriptPath, $arguments, $options));
         }
 
-        public static function registerScriptDirectory($directory)
+        protected static function getSSLConsoleOptions()
         {
-            $realpath = realpath($directory);
-
-            if (file_exists($realpath) && is_dir($realpath)) {
-                if (!in_array($directory, static::$scriptDirectories)) {
-                    static::$scriptDirectories[] = $directory;
-                }
-            } else {
-                throw new \Exception('Directory "' . $directory . '" is not exists');
-            }
+            return [
+                '--ignore-ssl-errors=true',
+                '--ssl-protocol=any',
+            ];
         }
 
-        public static function findScript($scriptName)
+        public static function getUrlContent($url, $width = 1920, $height = 1280, $userAgent = '')
         {
-            $scriptFile = StringHelper::load(Common::replaceSlashesToPlatformSlashes($scriptName))
-                                      ->ensureEndingIs('.js');
 
-            /**
-             * Full path to script
-             */
-            if (file_exists($scriptFile->get())) {
-                return $scriptFile->get();
-            }
+            $arguments = [
+                escapeshellarg($url),
+                $width,
+                $height,
+                escapeshellarg($userAgent),
+            ];
 
-            $scriptFile->removeBeginning(DIRECTORY_SEPARATOR);
-
-            $testFile = '';
-
-            foreach (static::getRegisteredDirectories() as $directory) {
-
-                $dir = StringHelper::load(Common::replaceSlashesToPlatformSlashes($directory))
-                                   ->ensureEndingIs(DIRECTORY_SEPARATOR);
-
-                $testFile = $dir->getClone()
-                                ->append($scriptFile)
-                                ->get();
-
-                if (file_exists($testFile)) {
-                    return $testFile;
-                }
-            }
-
-            return false;
-        }
-
-        public function ignoreSSLErrors()
-        {
-            return $this->setConsoleOption('ignore-ssl-errors', 'true')
-                        ->setConsoleOption('ssl-protocol', 'any');
+            return static::executeScript(Common::getPackageFilePath('getUrlContent.js'), $arguments, static::getSSLConsoleOptions());
         }
 
     }
