@@ -107,4 +107,9 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     }
 
+    public function testExecuteTraverseScript()
+    {
+        echo CasperJS::executeScript(\Zver\Common::getPackageTestFilePath('traverse.js'));
+    }
+
 }
