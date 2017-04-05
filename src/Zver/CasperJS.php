@@ -9,7 +9,7 @@ namespace Zver {
             return StringHelper::load(@shell_exec('casperjs --version'))
                                ->trimSpaces()
                                ->toLowerCase()
-                               ->isMatch('\d+\.\d+\.\d+$');
+                               ->isMatch('\d+\.\d+\.\d+');
         }
 
         public static function isPhantomJSInstalled()
