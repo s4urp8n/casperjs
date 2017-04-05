@@ -1,4 +1,5 @@
 <?php
+
 namespace Zver {
 
     class CasperJS
@@ -6,7 +7,7 @@ namespace Zver {
 
         public static function isCasperJSInstalled()
         {
-            return StringHelper::load(@shell_exec('casperjs --version'))
+            return StringHelper::load(Common::executeInSystem('casperjs --version'))
                                ->trimSpaces()
                                ->toLowerCase()
                                ->isMatch('\d+\.\d+\.\d+');
@@ -14,10 +15,10 @@ namespace Zver {
 
         public static function isPhantomJSInstalled()
         {
-            return StringHelper::load(@shell_exec('phantomjs -v'))
+            return StringHelper::load(Common::executeInSystem('phantomjs -v'))
                                ->trimSpaces()
                                ->toLowerCase()
-                               ->isMatch('\d+\.\d+\.\d+$');
+                               ->isMatch('\d+\.\d+\.\d+');
         }
 
         public static function getCasperJsCommand($scriptPath, $arguments = [], $options = [])
