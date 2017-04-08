@@ -6,7 +6,7 @@ use Zver\DirectoryWalker;
 class CasperJSTest extends PHPUnit\Framework\TestCase
 {
 
-    use \Zver\Package\Test;
+    use \Zver\Package\Helper;
 
     public static function setUpBeforeClass()
     {
@@ -56,14 +56,14 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     public function testExecuteScript()
     {
-        $this->assertSame(trim(CasperJS::executeScript(\Zver\Common::getPackageTestFilePath('testExecute.js'))), 'Hello world');
+        $this->assertSame(trim(CasperJS::executeScript(static::getPackagePath('/tests/files/testExecute.js'))), 'Hello world');
     }
 
     public function testExecuteArguments()
     {
         $arguments = ['1', '2', '3', '4324', 'http://site.com/'];
 
-        $this->assertSame(CasperJS::executeScript(\Zver\Common::getPackageTestFilePath('testArguments.js'), $arguments), implode("\n", $arguments) . "\n");
+        $this->assertSame(CasperJS::executeScript(static::getPackagePath('/tests/files/testArguments.js'), $arguments), implode("\n", $arguments) . "\n");
 
     }
 
@@ -109,7 +109,7 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
     public function testExecuteTraverseScript()
     {
-        echo CasperJS::executeScript(\Zver\Common::getPackageTestFilePath('traverse.js'));
+        echo CasperJS::executeScript(static::getPackagePath('/tests/files/traverse.js'));
     }
 
 }

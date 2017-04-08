@@ -2,8 +2,12 @@
 
 namespace Zver {
 
+    use Zver\Package\Helper;
+
     class CasperJS
     {
+
+        use Helper;
 
         public static function isCasperJSInstalled()
         {
@@ -49,7 +53,7 @@ namespace Zver {
                 escapeshellarg($userAgent),
             ];
 
-            return static::executeScript(Common::getPackageFilePath('getUrlContent.js'), $arguments, static::getSSLConsoleOptions());
+            return static::executeScript(static::getPackagePath('/files/getUrlContent.js'), $arguments, static::getSSLConsoleOptions());
         }
 
     }
