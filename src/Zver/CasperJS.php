@@ -38,7 +38,9 @@ namespace Zver {
         protected static function getSSLConsoleOptions()
         {
             return [
-                '--ignore-ssl-errors=true --ssl-protocol=any',
+                '--ignore-ssl-errors=true',
+                '--ssl-protocol=any',
+                '--disk-cache=false',
             ];
         }
 

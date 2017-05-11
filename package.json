@@ -1,0 +1,28 @@
+{
+  "name": "casperjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jquery-3.2.1.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "casperjs": "^1.1.3",
+    "hamsters.js": "^4.1.1",
+    "phantomjs": "^2.1.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s4urp8n/casperjs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/s4urp8n/casperjs/issues"
+  },
+  "homepage": "https://github.com/s4urp8n/casperjs#readme"
+}

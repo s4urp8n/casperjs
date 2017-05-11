@@ -24,8 +24,8 @@ var casper = require('casper').create(
         timeout: null,
         stepTimeout: null,
         // waitTimeout: timeout,
-        verbose: true,
-        logLevel: 'debug',
+        // verbose: true,
+        // logLevel: 'debug',
         onError: function (msg, backtrace) {
             say("ERROR!!! -> " + msg);
         },
@@ -63,14 +63,15 @@ var casper = require('casper').create(
  */
 var system = require('system');
 var utils = require('utils');
+var spawn = require("child_process").spawn;
 
 /**
  * System arguments
  */
-var startUrl = system.args[4];
-var allowedDomains = system.args[5];
-var width = system.args[6];
-var height = system.args[7];
+var startUrl = casper.cli.get('url');
+var allowedDomains = casper.cli.get('domains');
+var width = casper.cli.get('width');
+var height = casper.cli.get('height');
 
 /**
  * Default values
@@ -99,11 +100,10 @@ if (!height) {
 /**
  * Diplay run settings
  */
-say("START URL = " + startUrl);
-say("ALLOWED DOMAINS REGEX = " + allowedDomains);
-say("WIDTH = " + width + "px");
-say("HEIGHT = " + height + "px");
-
+say("Start url = " + startUrl);
+say("Allowed domains regex = " + allowedDomains);
+say("Width = " + width + "px");
+say("Height = " + height + "px");
 
 // Start spidering
 casper.start(startUrl, function () {
@@ -121,7 +121,9 @@ function processUrl(url) {
 }
 
 function _processUrl(url) {
-    say('LINK=' + url);
+
+    say("URL=[" + url + ']');
+
 }
 
 function say(string) {
@@ -142,7 +144,7 @@ function getHost(url) {
         host = host.substr(0, firstSlashPosition);
     }
 
-    say("HOST=" + host + ", URL=" + url);
+    say("Host=" + host + ", url=" + url);
 
     return host;
 }
@@ -152,9 +154,9 @@ function isAllowedDomain(url) {
     var allowed = allowedDomains.test(getHost(url));
 
     if (allowed) {
-        say('ALLOWED DOMAIN -> ' + url);
+        say('Allowed domain -> ' + url);
     } else {
-        say('NOT ALLOWED DOMAIN -> ' + url);
+        say('Not allowed domain -> ' + url);
     }
 
     return allowed;
@@ -214,29 +216,26 @@ function spider(url) {
 
                 Array.prototype.forEach.call(hrefs, function (link) {
 
-                    var pushed = false;
 
                     if (pendingUrls.indexOf(link) == -1 && visitedUrls.indexOf(link) == -1) {
                         if (isAllowedDomain(link)) {
                             pendingUrls.push(link);
-                            pushed = true;
+                            say('Pushed to queue ' + link);
+                        } else {
+                            say('Not pushed to queue, because domain is not allowed: ' + link);
                         }
-                    }
-
-                    if (pushed) {
-                        say('PUSHED TO QUEUE ' + link);
                     } else {
-                        say('NOT PUSHED TO QUEUE ' + link);
+                        say('Not pushed to queue, because already processed: ' + link);
                     }
 
                     processUrl(link);
 
                 });
 
-                // if (pendingUrls.length > 0) {
-                //     var nextUrl = pendingUrls.shift();
-                //     spider(nextUrl);
-                // }
+                if (pendingUrls.length > 0) {
+                    var nextUrl = pendingUrls.shift();
+                    spider(nextUrl);
+                }
 
             }
             else {
