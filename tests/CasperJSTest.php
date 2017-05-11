@@ -97,6 +97,7 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
         ];
 
         foreach ($testData as $test) {
+
             $content = CasperJS::getUrlContent($test['url']);
 
             foreach ($test['substrings'] as $substring) {
