@@ -9,6 +9,21 @@ namespace Zver {
 
         use Helper;
 
+        public static function getScriptsDirectory($script = null)
+        {
+            $scriptPath = DirectoryWalker::fromCurrent()
+                                         ->upUntil('src')
+                                         ->up()
+                                         ->enter('files')
+                                         ->get();
+
+            if (!is_null($script)) {
+                $scriptPath .= $script;
+            }
+
+            return $scriptPath;
+        }
+
         public static function isCasperJSInstalled()
         {
             return StringHelper::load(Common::executeInSystem('casperjs --version'))
@@ -35,7 +50,7 @@ namespace Zver {
             return Common::executeInSystem(static::getCasperJsCommand($scriptPath, $arguments, $options));
         }
 
-        protected static function getSSLConsoleOptions()
+        protected static function getDefaultConsoleOptions()
         {
             return [
                 '--ignore-ssl-errors=true',
@@ -54,7 +69,7 @@ namespace Zver {
                 escapeshellarg($userAgent),
             ];
 
-            return static::executeScript(static::getPackagePath('/files/getUrlContent.js'), $arguments, static::getSSLConsoleOptions());
+            return static::executeScript(static::getScriptsDirectory('getUrlContent.js'), $arguments, static::getDefaultConsoleOptions());
         }
 
     }

@@ -1,7 +1,6 @@
 <?php
 
 use Zver\CasperJS;
-use Zver\DirectoryWalker;
 
 class CasperJSTest extends PHPUnit\Framework\TestCase
 {
@@ -25,12 +24,13 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
         if (!$installed) {
             $this->fail("CasperJS is not installed. Test aborting.\n");
         }
+
+        $this->assertTrue($installed);
     }
 
     public function testCommandGeneration()
     {
         $testData = [
-
             [
                 'path'      => 'script.path',
                 'arguments' => ['arg1', 'arg2', 'arg3'],
@@ -52,6 +52,8 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
         if (!$installed) {
             $this->fail("PhantomJS is not installed. Test aborting.\n");
         }
+
+        $this->assertTrue($installed);
     }
 
     public function testExecuteScript()
@@ -71,7 +73,6 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
     {
 
         $testData = [
-
             [
                 'url'        => 'http://php.net/',
                 'substrings' => [
@@ -80,9 +81,10 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                     '</html',
                     '<body',
                     '</body',
-                    '<a href="/downloads">Downloads</a>',
-                    '<a href="/mirrors.php">Mirror sites</a>',
+                    '<a href="http://php.net/downloads">Downloads</a>',
+                    '<a href="http://php.net/mirrors.php">Mirror sites</a>',
                     'php',
+                    '<img src="http://php.net/images/logos/php-logo.svg" width="48" height="24" alt="php">',
                 ],
             ],
             [
@@ -106,11 +108,6 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
 
         }
 
-    }
-
-    public function testExecuteTraverseScript()
-    {
-        echo CasperJS::executeScript(static::getPackagePath('/tests/files/traverse.js'));
     }
 
 }
