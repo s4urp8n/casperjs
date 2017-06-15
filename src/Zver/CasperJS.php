@@ -56,7 +56,6 @@ namespace Zver {
                 '--web-security=false',
                 '--output-encoding=utf8',
                 '--cookies-file="' . $tempDirectory . DIRECTORY_SEPARATOR . 'cookie.txt"',
-                '--disk-cache-path="' . $tempDirectory . DIRECTORY_SEPARATOR . 'cache"',
                 '--local-storage-path="' . $tempDirectory . DIRECTORY_SEPARATOR . 'local"',
                 '--offline-storage-path="' . $tempDirectory . DIRECTORY_SEPARATOR . 'offline"',
             ];
