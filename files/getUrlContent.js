@@ -1,9 +1,9 @@
 var system = require('system');
 var args = system.args;
 var link = args[4];
-var width = args[5];
-var height = args[6];
-var userAgent = args[7];
+var width = 1980;
+var height = 1280;
+var userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36';
 
 var utils = require('utils');
 var casper = require('casper').create({
