@@ -64,6 +64,12 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                     '<svg',
                 ],
             ],
+            [
+                'url'        => 'http://support.amd.com/en-us/download/desktop?os=Windows+10+-+64',
+                'substrings' => [
+                    'class="submitButton"',
+                ],
+            ],
 
         ];
 
