@@ -79,9 +79,8 @@ class CasperJSTest extends PHPUnit\Framework\TestCase
                                                                                   ->enter('temp')
                                                                                   ->get());
 
-            foreach ($test['substrings'] as $substring) {
-                $this->assertContains($substring, $content);
-            }
+            $this->assertTrue(\Zver\StringHelper::load($content)
+                                                ->isContainAllIgnoreCase($test['substrings']));
 
         }
 

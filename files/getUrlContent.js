@@ -56,6 +56,7 @@ casper.options.viewportSize = {
 };
 
 casper.start(link)
+    .wait(5000)
     .thenEvaluate(function () {
 
         var getAbsoluteUrl = (function () {

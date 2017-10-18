@@ -60,10 +60,8 @@ namespace Zver {
             ];
         }
 
-        public static function getUrlContent(
-            $url,
-            $tempDirectory
-        ) {
+        public static function getUrlContent($url, $tempDirectory)
+        {
 
             $arguments = [
                 escapeshellarg($url),
