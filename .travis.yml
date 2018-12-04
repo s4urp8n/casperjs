@@ -9,8 +9,6 @@ before_script:
   - composer install
   - wget https://phar.phpunit.de/phpunit.phar
   - chmod 777 ./phpunit.phar
-  - npm install -g phantomjs
-  - npm install -g casperjs
 
 script:
   - ./phpunit.phar

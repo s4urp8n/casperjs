@@ -1,6 +1,6 @@
 {
-  "name": "zver/casperjs",
-  "description": "CasperJS components",
+  "name": "zver/phantomjs",
+  "description": "PhantomJS PHP wrapper",
   "minimum-stability": "stable",
   "config": {
     "optimize-autoloader": true
@@ -19,10 +19,9 @@
     }
   },
   "require": {
-    "zver/common": "^3.0",
-    "zver/string-helper": "^2.1",
     "zver/directory-walker": "^1.0",
-    "zver/view": "^1.1"
+    "zver/string-helper": "^2.2",
+    "zver/common": "^3.0"
   },
   "require-dev": {
   }
