@@ -9,6 +9,7 @@ before_script:
   - composer install
   - wget https://phar.phpunit.de/phpunit.phar
   - chmod 777 ./phpunit.phar
+  - chmod 777 -R ./src/phantomjs/
 
 script:
   - ./phpunit.phar
