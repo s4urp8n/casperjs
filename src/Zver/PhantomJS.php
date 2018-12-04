@@ -90,22 +90,12 @@ namespace Zver {
 
         }
 
-        /***
-         * @param $url URL to open
-         * @param int $w Browser window width
-         * @param int $h Browser window height
-         * @param string $userAgent
-         * @param int $timeout Timeout in seconds
-         * @param null $proxy 23.23.23.23:2020
-         * @return null|string
-         */
         public static function getPageContent(
             $url,
             $w = 1920,
             $h = 1080,
-            $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36',
-            $timeout = 5,
-            $proxy = null
+            $proxy = null,
+            $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
         ) {
 
             /**
@@ -116,7 +106,6 @@ namespace Zver {
                 $w,
                 $h,
                 $userAgent,
-                $timeout,
             ];
 
             /**
